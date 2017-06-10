@@ -1,4 +1,17 @@
 <resources>
     <string name="app_name"></string>
-    <string name="action_settings">Settings</string>
-</resources>
+    <string name="ajouter">Ajouter</string>
+    <string name="lister">Lister</string>
+    <string name="categorie">Catégorie</string>
+    <string name="total">Total</string>
+    <string name="sp_categorie">Selecionez une Catégorie</string>
+
+    <string name="lbl_table">Gestion Inventaire</string>
+
+    <string name="lbl_id">Ref</string>
+    <string name="lbl_nom">Nom</string>
+    <string name="lbl_categ">Catégorie</string>
+    <string name="lbl_prix">Prix</string>
+    <string name="lbl_qnt">Unités</string>
+
+    </resources>

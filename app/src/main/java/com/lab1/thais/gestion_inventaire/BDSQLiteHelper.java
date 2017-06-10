@@ -5,20 +5,26 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Thais on 2017-06-05.
  */
 
-public class BDSQLiteHelper extends SQLiteOpenHelper{
+public class BDSQLiteHelper extends SQLiteOpenHelper {
 
-    private static  final int DATABASE_VERSION = 1;
+    // Database Version
+    private static final int DATABASE_VERSION = 1;
+    //DataBase Name
     private static final String DATABASE_NAME = "Inventaire";
-
-    //Constants pra facilitar na busca dos dados
+    // cat table name
     private static final String TABLE_PRODUITS = "Produits";
+
+    // cat Table Columns names
     private static final String ID_PRODUIT = "ref";
     private static final String NOM_PRODUIT = "nom";
     private static final String CODE_CATEGORIE = "code";
@@ -26,148 +32,173 @@ public class BDSQLiteHelper extends SQLiteOpenHelper{
     private static final String UNITE_STOCK = "uniteStock";
 
     //Config pra trazer todas as colunas
-    private static final String[] ALL_COl = {ID_PRODUIT,NOM_PRODUIT,CODE_CATEGORIE,PRIX,UNITE_STOCK};
+    private static final String[] ALL_COl = {ID_PRODUIT, NOM_PRODUIT, CODE_CATEGORIE, PRIX, UNITE_STOCK};
 
-    public BDSQLiteHelper(Context context){
+    //Constutor
+    public BDSQLiteHelper(Context context) {
 
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+    //Metodos obrigatórios criados pela ide
     @Override
-    public void onCreate(SQLiteDatabase db) {
+    public void onCreate(SQLiteDatabase bd) {
 
-        String CREATE_TABLE = "CREATE TABLE Produits("+
-                "ref INTEGER PRIMARY KEY AUTOINCREMENT,"+
-                "nom TEXT,"+
-                "code TEXT,"+
-                "prixUnit FLOAT,"+
-                "uniteStock INTEGER)";
-        db.execSQL(CREATE_TABLE);
+        Log.i("---------> Confirmation", "Connected");
+
+        try {
+            String CREATE_TABLE = "CREATE TABLE " + TABLE_PRODUITS +
+                    "(" +
+                    "ref INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "nom TEXT," +
+                    "code TEXT," +
+                    "prixUnit FLOAT," +
+                    "uniteStock INTEGER)";
+
+            Log.i("---------> Confirmation", "Table Created");
+            bd.execSQL(CREATE_TABLE);
+
+            Boolean created = true;
+
+
+        } catch (Exception e) {
+            Log.e("Ërror", e.toString());
+        }
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    public void onUpgrade(SQLiteDatabase bd, int oldVersion, int newVersion) {
 
-        db.execSQL("DROP TABLE IF EXISTS Produits");
-        this.onCreate(db);
+        bd.execSQL("DROP TABLE IF EXISTS Produits");
+        this.onCreate(bd);
+        Log.i("---------> Confirmation", "Upgraded");
     }
 
-    public void addProd(Produit produit){
+    public void insertProd() {
 
-        //Escreve no bd
-        SQLiteDatabase db = this.getWritableDatabase();
+            Produit produit;
+
+            addProd(new Produit(1, "Chai", "Boissons", 90.00, 39));
+            addProd(new Produit(2, "Chang", "Boissons", 95.00, 17));
+            addProd(new Produit(3, "Anissed Syrup", "Condiments", 110.00, 53));
+            addProd(new Produit(4, "Chef Antons Cajum Seasoning", "Condiments", 10.00, 13));
+            addProd(new Produit(5, "Chef Anton's Gumto Mix", "Condiments", 106.75, 20));
+            addProd(new Produit(6, "Grandmas Boysenberry", "Condiments", 125.75, 120));
+            addProd(new Produit(7, "Uncle Bob's Organic Dried Pears", "Produits secs", 150.00, 15));
+            addProd(new Produit(8, "Northwoods Cranbrerry", "Condiments", 485.00, 29));
+            addProd(new Produit(9, "Mishi Kobe Niku", "Viandes", 485.00, 29));
+            addProd(new Produit(10, "Ikura", "Poissons et fruits de mer", 155.00, 31));
+            addProd(new Produit(1000,"Select","Select",0.0,0));
+    }
+
+    //Metodos adicionados
+    public void addProd(Produit produit) {
+
+        SQLiteDatabase bd = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
 
-        values.put(NOM_PRODUIT,produit.getNomProd());
-        values.put(CODE_CATEGORIE,produit.getCodeCategorie());
-        values.put(PRIX, new Float(produit.getPrixUnit()));
+        values.put(NOM_PRODUIT, produit.getNomProd());
+        values.put(CODE_CATEGORIE, produit.getCodeCategorie());
+        values.put(PRIX, new Double(produit.getPrixUnit()));
         values.put(UNITE_STOCK, new Integer(produit.getUniteStock()));
 
-        db.insert(TABLE_PRODUITS, null, values);
-        db.close();
+        bd.insert(TABLE_PRODUITS, null, values);
+        bd.close();
     }
 
-    public Produit getProduit(){
-
-        //Le a bd
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        //Apontador para as linhas da tabela
-        Cursor cursor = db.query(TABLE_PRODUITS,
-                ALL_COl,//todas as colunas
-                "code = ?", //  ? será substituida pelo paramentro passado = code_Categorie
-                new String [] {},
-                null,//group by
-                null,//having
-                null,//order by
-                null);//limit
-
-        if (cursor == null){
-            return null;
-        }
-        else{
-            cursor.moveToFirst();
-            Produit produit = cursorToProduit(cursor);
-            return produit;
-        }
-    }
-
-    //aponta para cada linha e pega as informaoces
-    private Produit cursorToProduit(Cursor cursor){
+    //aponta para cada linha e pega as informaoces e passa para a Classe Prod
+    private Produit cursorToProduit(Cursor cursor) {
 
         Produit produit = new Produit();
 
         produit.setRef(Integer.parseInt(cursor.getString(0)));
         produit.setNomProd(cursor.getString(1));
         produit.setCodeCategorie(cursor.getString(2));
-        produit.setPrixUnit(Float.parseFloat(cursor.getString(3)));
-        produit.setPrixUnit(Integer.parseInt(cursor.getString(4)));
+        produit.setPrixUnit(Double.parseDouble(cursor.getString(3)));
+        produit.setUniteStock(Integer.parseInt(cursor.getString(4)));
 
         return produit;
     }
 
-    public ArrayList<Produit> getAllProduits(){
+    public ArrayList<Produit> getAllProduits() {
 
         ArrayList<Produit> listProd = new ArrayList<Produit>();
 
         String query = "SELECT * FROM " + TABLE_PRODUITS;
 
-        //le
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(query, null);
+        //Read
+        SQLiteDatabase bd = this.getReadableDatabase();
+        Cursor cursor = bd.rawQuery(query, null);
 
-        if(cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
 
-            do{
+            do {
                 Produit produit = cursorToProduit(cursor);
                 listProd.add(produit);
-            }while (cursor.moveToNext());
+            } while (cursor.moveToNext());
         }
         return listProd;
     }
 
-    public ArrayList<String> getCategories(){
+    public ArrayList<Produit> getAllProduits(String categorie) {
 
-        ArrayList<String> listCateg = new ArrayList<String>();
+        ArrayList<Produit> listProd = new ArrayList<Produit>();
 
-        String query = "SELECT code FROM " + TABLE_PRODUITS + " WHERE code = " + CODE_CATEGORIE;
+        String query = "SELECT * FROM " + TABLE_PRODUITS + " WHERE code = "+"'"+categorie+"'";
 
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(query, null);
+        //Read
+        SQLiteDatabase bd = this.getReadableDatabase();
+        Cursor cursor = bd.rawQuery(query, null);
 
-        if(cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
 
-            do{
-                String categ = cursor.getString(2);
-                listCateg.add(categ);
-            }while (cursor.moveToNext());
+            do {
+                Produit produit = cursorToProduit(cursor);
+                listProd.add(produit);
+            } while (cursor.moveToNext());
         }
-        return listCateg;
+        return listProd;
     }
 
-    public int updateProduit(Produit produit){
+    public List<String> getAllCategories() {
 
-        //Escreve no bd
-        SQLiteDatabase db = this.getWritableDatabase();
+        List<String> cat = new ArrayList<String>();
 
-        int countLigne;
-        //ver min 7:34 de s04q13 SQLite parte03
+        // Select All Query
+        String selectQuery = "SELECT * FROM " + TABLE_PRODUITS + " GROUP BY code "; //GROUP BY code
 
-        db.close();
-        return 0;
+        SQLiteDatabase bd = this.getReadableDatabase();
+        Cursor cursor = bd.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                cat.add(cursor.getString(2));
+            } while (cursor.moveToNext());
+        }
+
+        // closing connection
+        cursor.close();
+        bd.close();
+
+        // returning lables
+        return cat;
     }
 
-    public int deleteProduit(Produit produit){
+    public Double getTotal(){
 
-        //Escreve no bd
         SQLiteDatabase db = this.getWritableDatabase();
 
-        int countLigne;
-        //ver min 7:34 de s04q13 SQLite parte03
+        String query = "SELECT sum(prixUnit) * sum(uniteStock) as total FROM " + TABLE_PRODUITS;
 
-        db.close();
-        return 1;
+        Cursor c = db.rawQuery(query, null);
+
+        //Add in the movetofirst etc here? see SO
+        c.moveToFirst();
+        Double i = c.getDouble(0);
+
+        return i;
     }
 
 

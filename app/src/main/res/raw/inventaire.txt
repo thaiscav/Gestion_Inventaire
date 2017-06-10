@@ -1,0 +1,10 @@
+1,"Chai","Boissons", 90.00, 39;
+2,"Chang","Boissons", 95.00, 17;
+3,"Anissed Syrup","Condiments",  110.00, 53;
+4,"Chef Antons Cajum Seasoning","Condiments",  10.00, 13;
+5,"ChefAnton's Gumto Mix", "Condiments", 106.75, 20;
+6,"Grandmas Boysenberry", "Condiments", 125.75, 120;
+7,"Uncle Bob's Organic Dried Pears","Produits secs",  150.00, 15;
+8,"Northwoods Cranbrerry", "Condiments", 485.00, 29;
+9,"Mishi Kobe Niku","Viandes",  485.00, 29;
+10,"Ikura","Poissons et fruits de mer", 155.00, 31;

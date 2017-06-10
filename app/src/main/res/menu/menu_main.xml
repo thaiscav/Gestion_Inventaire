@@ -6,19 +6,25 @@
     <item
         android:id="@+id/lister"
         android:orderInCategory="1"
-        android:title="Lister"
-        app:showAsAction="always" />
+        android:title="@string/lister"
+        app:showAsAction="always"
+        />
     <item
         android:id="@+id/categorie"
-        android:title="Categorie"
+        android:title="@string/categorie"
         app:showAsAction="always"
         android:orderInCategory="2"
         />
     <item
         android:id="@+id/total"
-        android:title="Total"
+        android:title="@string/total"
         app:showAsAction="always"
         android:orderInCategory="3"
         />
-
+    <item
+        android:id="@+id/ajouter"
+        android:orderInCategory="100"
+        android:title="@string/ajouter"
+        app:showAsAction="never"
+        />
 </menu>
